@@ -8,6 +8,23 @@ const API_URL = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 export default function Login() {
 
   const [selectedRole, setSelectedRole] = useState("EMPLOYEE");
+  
+  useEffect(() => {
+    google.accounts.id.initialize({
+      client_id: `${API_URL}`,
+      callback: handleCredentialLogin,
+    });
+
+    google.accounts.id.renderButton(
+      document.getElementById("googleSignInDiv"),
+      {
+        theme: "outline",
+        size: "large",
+        width: "100%",
+      }
+    );
+
+  }, []);
 
   const handleCredentialLogin = async (response) => {
 
@@ -39,40 +56,10 @@ export default function Login() {
       }
 
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message)
       console.error("Login error:", err);
     }
   };
-
-  useEffect(() => {
-
-    // ✅ SAFE CHECK (VERY IMPORTANT)
-    if (!window.google?.accounts?.id) {
-      console.error("Google script not loaded");
-      return;
-    }
-
-    const el = document.getElementById("googleSignInDiv");
-    if (!el) return;
-
-    // reset button to avoid duplicate render issues
-    el.innerHTML = "";
-
-    window.google.accounts.id.initialize({
-      client_id: API_URL,
-      callback: handleCredentialLogin,
-    });
-
-    window.google.accounts.id.renderButton(
-      el,
-      {
-        theme: "outline",
-        size: "large",
-        width: "100%",
-      }
-    );
-
-  }, [selectedRole]);
 
   return (
 
@@ -170,8 +157,14 @@ export default function Login() {
               onChange={(value) => setSelectedRole(value)}
               className="w-full"
               options={[
-                { label: "Employee", value: "EMPLOYEE" },
-                { label: "Manager", value: "MANAGER" },
+                {
+                  label: "Employee",
+                  value: "EMPLOYEE",
+                },
+                {
+                  label: "Manager",
+                  value: "MANAGER",
+                },
               ]}
             />
 
