@@ -30,7 +30,7 @@ routes(app)
 
 
 // Health Route
-app.get("/", async (req, res) => { res.json("Server is running")});
+app.get("/", async (req, res) => { res.json(`Server is running on Port no : ${PORT} `)});
 
 app.use((req, res) => {
   res.status(404).json({
