@@ -1,3 +1,7 @@
 export const getToken = () => {
-  return localStorage.getItem("token") || "";
+  try {
+    return localStorage.getItem("token");
+  } catch (err) {
+    return null;
+  }
 };
