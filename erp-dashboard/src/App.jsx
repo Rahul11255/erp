@@ -8,16 +8,12 @@ import {
 import AppLayout from "./layouts/AppLayout";
 import Login from "./pages/Login";
 
-import { getToken } from "./utils/helperFunction";
-
 import PurchaseRequests from "./pages/PurchaseRequests";
 import ManagePurchaseRequests from "./pages/ManagePurchaseRequests";
 import AuditLogs from "./pages/AuditLogs";
 import Dashboard from "./pages/Dashboard";
 
 export default function AppRoutes() {
-
-  const token = getToken(); // ✅ no useEffect needed
 
   return (
     <BrowserRouter>
@@ -26,21 +22,13 @@ export default function AppRoutes() {
         {/* LOGIN ROUTE */}
         <Route
           path="/login"
-          element={
-            token
-              ? <Navigate to="/" replace />
-              : <Login />
-          }
+          element={<Login />}
         />
 
-        {/* PROTECTED ROUTES */}
+        {/* MAIN ROUTE (NO AUTH CHECK) */}
         <Route
           path="/"
-          element={
-            token
-              ? <AppLayout />
-              : <Navigate to="/login" replace />
-          }
+          element={<AppLayout />}
         >
           <Route index element={<Dashboard />} />
 
@@ -54,9 +42,7 @@ export default function AppRoutes() {
         {/* CATCH ALL */}
         <Route
           path="*"
-          element={
-            <Navigate to={token ? "/" : "/login"} replace />
-          }
+          element={<Navigate to="/" replace />}
         />
 
       </Routes>
