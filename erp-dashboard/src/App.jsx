@@ -8,6 +8,8 @@ import {
 import AppLayout from "./layouts/AppLayout";
 import Login from "./pages/Login";
 
+import { getToken } from "./utils/helperFunction";
+
 import PurchaseRequests from "./pages/PurchaseRequests";
 import ManagePurchaseRequests from "./pages/ManagePurchaseRequests";
 import AuditLogs from "./pages/AuditLogs";
@@ -15,20 +17,28 @@ import Dashboard from "./pages/Dashboard";
 
 export default function AppRoutes() {
 
+  const token = getToken(); 
+
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* LOGIN ROUTE */}
         <Route
           path="/login"
-          element={<Login />}
+          element={
+            token
+              ? <Navigate to="/" replace />
+              : <Login />
+          }
         />
 
-        {/* MAIN ROUTE (NO AUTH CHECK) */}
         <Route
           path="/"
-          element={<AppLayout />}
+          element={
+            token
+              ? <AppLayout />
+              : <Navigate to="/login" replace />
+          }
         >
           <Route index element={<Dashboard />} />
 
@@ -39,10 +49,11 @@ export default function AppRoutes() {
           <Route path="audit-logs" element={<AuditLogs />} />
         </Route>
 
-        {/* CATCH ALL */}
         <Route
           path="*"
-          element={<Navigate to="/" replace />}
+          element={
+            <Navigate to={token ? "/" : "/login"} replace />
+          }
         />
 
       </Routes>
