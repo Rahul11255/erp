@@ -1,5 +1,5 @@
 const config = {  
-  apiUrl: "http://localhost:4005/admin",
+  apiUrl: "https://erp-r669.onrender.com/admin",
 };
 
 export default config;
