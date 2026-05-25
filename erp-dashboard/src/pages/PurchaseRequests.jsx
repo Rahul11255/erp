@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import * as XLSX from "xlsx";
 
 import {
   Button,
@@ -196,6 +197,43 @@ export default function PurchaseRequests() {
     setOpen(false);
     setEditId(null);
     form.resetFields();
+  };
+
+   const handleExportCSV = () => {
+    if (!data || data.length === 0) {
+      message.warning("No data to export");
+      return;
+    }
+  
+    // ─── Format data for export ────────────────────
+    const exportData = data.map((item, index) => ({
+      "S.No":          index + 1,
+      "Item Name":     item.item_name,
+      "Quantity":      `${item.quantity} ${item.unit}`,
+      "Department":    item.department,
+      "Priority":      item.priority,
+      "Status":        item.status,
+      "Justification": item.justification || "",
+      "Remarks":       item.remarks       || "",
+      "Requested By":  item.created_by?.name  || "",
+      "Requester Email": item.created_by?.email || "",
+      "Reviewed By":   item.reviewed_by?.name  || "Pending",
+      "Required Date": dayjs(item.required_date).format("DD MMM YYYY"),
+      "Created At":    dayjs(item.created_at).format("DD MMM YYYY hh:mm A"),
+    }));
+  
+    // ─── Create worksheet ──────────────────────────
+    const worksheet  = XLSX.utils.json_to_sheet(exportData);
+    const workbook   = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Purchase Requests");
+  
+    // ─── Download as CSV ───────────────────────────
+    XLSX.writeFile(
+      workbook,
+      `purchase_requests_${dayjs().format("YYYY-MM-DD")}.csv`
+    );
+  
+    message.success("CSV exported successfully");
   };
 
   const columns = [
@@ -430,6 +468,11 @@ export default function PurchaseRequests() {
             <Button onClick={resetFilters}>
               Reset
             </Button>
+            <Button
+            onClick={handleExportCSV}
+          >
+            Export CSV
+          </Button>
 
           </div>
           </div>
