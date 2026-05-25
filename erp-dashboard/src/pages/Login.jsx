@@ -9,13 +9,16 @@ export default function Login() {
 
   const [selectedRole, setSelectedRole] = useState("EMPLOYEE");
   
-  useEffect(() => {
-    google.accounts.id.initialize({
-      client_id: `${API_URL}`,
+ useEffect(() => {
+  const initializeGoogle = () => {
+    if (!window.google) return;
+
+    window.google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
       callback: handleCredentialLogin,
     });
 
-    google.accounts.id.renderButton(
+    window.google.accounts.id.renderButton(
       document.getElementById("googleSignInDiv"),
       {
         theme: "outline",
@@ -23,15 +26,26 @@ export default function Login() {
         width: "100%",
       }
     );
+  };
 
-  }, [selectedRole]);
+  // wait until script is loaded
+  if (window.google) {
+    initializeGoogle();
+  } else {
+    const interval = setInterval(() => {
+      if (window.google) {
+        clearInterval(interval);
+        initializeGoogle();
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }
+}, [selectedRole]);
 
   const handleCredentialLogin = async (response) => {
-
     if (!response?.credential) return;
-
     try {
-
       const res = await axiosInstance.post(
         "/users/google-login",
         {
@@ -39,22 +53,17 @@ export default function Login() {
           role: selectedRole,
         }
       );
-
       if (res.status) {
-
         localStorage.setItem(
           "token",
           res.data.accessToken
         );
-
         localStorage.setItem(
           "userInfo",
           JSON.stringify(res.data.userInfo)
         );
-
         window.location.href = "/";
       }
-
     } catch (err) {
       toast.error(err.message)
       console.error("Login error:", err);

@@ -13,10 +13,7 @@ static async listAuditLogs(req, res) {
       extra:   {},
     };
 
-    const srvRes = await AuditLogsService.listAuditLogs(
-      req.query,
-      req.user
-    );
+    const srvRes = await AuditLogsService.listAuditLogs(req.user);
 
     if (srvRes.data.length) {
       response.data    = srvRes.data;

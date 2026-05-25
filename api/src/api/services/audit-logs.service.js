@@ -3,20 +3,18 @@ const db = require("../../db/db");
 class AuditLogsService {
     static async listAuditLogs(user) {
         try {
-
-
             const dbQuery = db("audit_logs")
                 .select(
                     "audit_logs.*",
-                    "performer.id   as performed_by_id",
-                    "performer.name as performed_by_name",
-                    "performer.email as performed_by_email",
+                    "performer.id     as performed_by_id",
+                    "performer.name   as performed_by_name",
+                    "performer.email  as performed_by_email",
                     "performer.avatar as performed_by_avatar",
-                    "performer.role as performed_by_role",
+                    "performer.role   as performed_by_role",
                     "pr.item_name",
-                    "pr.status as request_status",
+                    "pr.status        as request_status",
                     "pr.department",
-                    "pr.created_by as request_created_by",
+                    "pr.created_by    as request_created_by",
                 )
                 .leftJoin(
                     "users as performer",
@@ -27,16 +25,16 @@ class AuditLogsService {
                     "purchase_requests as pr",
                     "audit_logs.request_id",
                     "pr.id"
-                )
-                .orderBy("audit_logs.created_at", "desc");
+                );
+
+            dbQuery.orderBy("audit_logs.created_at", "desc");
+
 
             if (user.role === "EMPLOYEE") {
-                // Employee — only logs for their own requests
                 dbQuery.where("pr.created_by", user.id);
-
             }
-            
-            // Manager — no filter, sees all logs
+
+
             const logs = await dbQuery;
 
             const formattedData = logs.map((item) => ({
@@ -71,7 +69,6 @@ class AuditLogsService {
             throw err;
         }
     }
-
 }
 
 module.exports = AuditLogsService;
