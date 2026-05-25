@@ -3,6 +3,12 @@
 
 > A Mini ERP system for managing employee purchase requests with manager approval workflow, audit logging, and CSV export.
 
+> ⚠️ **Important — Before Testing**
+> The backend API is hosted on Render free tier. If the app has been
+> inactive for 3–4 hours, the server goes into sleep mode. The first
+> login attempt may take **2–3 minutes** to respond. This is normal
+> Render cold start behaviour — not an error. Please wait and try again.
+
 ---
 
 ## 🔗 Links
